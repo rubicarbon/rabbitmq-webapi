@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using rabbitmq_webapi.DataAccess;
 using rabbitmq_webapi.Endponts;
+using rabbitmq_webapi.Messaging;
 using rabbitmq_webapi.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services.AddDbContext<UserContext>(options =>
 });
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRabbitMQProducer, RabbitMQProducer>();
 
 var app = builder.Build();
 

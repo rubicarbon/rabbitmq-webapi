@@ -1,4 +1,6 @@
-﻿using rabbitmq_webapi.Models;
+﻿using Microsoft.Extensions.FileSystemGlobbing.Internal;
+using rabbitmq_webapi.Messaging;
+using rabbitmq_webapi.Models;
 using rabbitmq_webapi.Repositories;
 
 namespace rabbitmq_webapi.Endponts;
@@ -19,9 +21,14 @@ public static class UserEndpoints
             return await repository.GetUser(id);
         }).WithOpenApi();
 
-        group.MapPost("", async (User user) =>
+        group.MapPost("", async (IRabbitMQProducer rabbitMq, User user) =>
         {
-            return true;
+            string exchangeName = "UserExchange";
+            string routingKey = "UserRoutingKey";
+            string queueName = "UserQueue";
+            rabbitMq.SendProductMessage(exchangeName, routingKey, queueName, user);
+           
+            return Results.Accepted();
         }).WithOpenApi();
 
         group.MapPut("", async (User user) =>
